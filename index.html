@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Share</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #0d1117;
+      color: #c9d1d9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 10px;
+    }
+    textarea {
+      width: 90%;
+      height: 250px;
+      background: #161b22;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+      padding: 10px;
+      border-radius: 8px;
+      outline: none;
+      resize: none;
+      font-size: 15px;
+    }
+    button {
+      background: #238636;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #2ea043;
+    }
+    .copy-btn {
+      background: #1f6feb;
+    }
+    .copy-btn:hover {
+      background: #388bfd;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔥 Real-Time Code Share</h2>
+  <textarea id="codeBox" placeholder="Type or paste your code here..."></textarea>
+  <div>
+    <button id="copyBtn" class="copy-btn">Copy Code</button>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    // 🔥 Replace this with your Firebase config
+  const firebaseConfig = {
+  apiKey: "AIzaSyDl8rHqIOl4deFRbF4kH4vuIA37UdoGvQo",
+  authDomain: "code-share-48d5e.firebaseapp.com",
+  databaseURL: "https://code-share-48d5e-default-rtdb.firebaseio.com",
+  projectId: "code-share-48d5e",
+  storageBucket: "code-share-48d5e.firebasestorage.app",
+  messagingSenderId: "429700373293",
+  appId: "1:429700373293:web:5d7fd2f67fbf37fa0451a4"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const codeRef = ref(db, "sharedCode");
+
+    const codeBox = document.getElementById("codeBox");
+    const copyBtn = document.getElementById("copyBtn");
+
+    // Update in real-time
+    codeBox.addEventListener("input", () => {
+      set(codeRef, codeBox.value);
+    });
+
+    // Listen for updates from others
+    onValue(codeRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data !== null && data !== codeBox.value) {
+        codeBox.value = data;
+      }
+    });
+
+    // Copy button
+    copyBtn.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(codeBox.value);
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => (copyBtn.textContent = "Copy Code"), 1500);
+    });
+  </script>
+</body>
+</html>
