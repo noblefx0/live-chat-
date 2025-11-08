@@ -70,9 +70,39 @@ textarea:focus {
   <h2>Noble Real-Time Code Share</h2>
   <textarea id="codeBox" placeholder="Type or paste your code here..."></textarea>
   <div>
-    <button id="copyBtn" class="copy-btn">Copy Code</button>
+    <button id="copyBtn" class="copy-btn">Copy text</button>
   </div>
+  <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+  <button id="selectBtn">Select All</button>
+  <button id="pasteBtn">Paste</button>
+</div>
+<script>
+  const codeBox = document.getElementById("codeBox");
+  const selectBtn = document.getElementById("selectBtn");
+  const pasteBtn = document.getElementById("pasteBtn");
 
+  // Select all text
+  selectBtn.addEventListener("click", () => {
+    codeBox.select();
+  });
+
+  // Paste from clipboard
+  pasteBtn.addEventListener("click", async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      codeBox.value += text;
+    } catch (err) {
+      alert("Clipboard access denied — allowpermission first.");
+    }
+  });
+</script>
+<button id="deleteBtn">Delete</button>
+<script>
+    const deleteBtn = document.getElementById("deleteBtn");
+    deleteBtn.addEventListener("click", () => {
+        codeBox.value = "";
+    });
+</script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
@@ -91,8 +121,6 @@ textarea:focus {
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const codeRef = ref(db, "sharedCode");
-
-    const codeBox = document.getElementById("codeBox");
     const copyBtn = document.getElementById("copyBtn");
 
     // Update in real-time
